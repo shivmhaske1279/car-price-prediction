@@ -1,7 +1,7 @@
 import os
 import pickle
 import numpy as np
-from flask import Flask, request, render_code, render_template_string
+from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
@@ -177,11 +177,9 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    # Capture raw form values
     form_data = request.form
     
-    # Structure inputs sequentially to match internal model format:
-    # [Make, Model, Year, Engine Size, Mileage, Fuel Type, Transmission]
+    # Structure inputs sequentially to match your model's expected features
     features = [
         float(form_data['make']),
         float(form_data['model']),
@@ -192,12 +190,10 @@ def predict():
         float(form_data['transmission'])
     ]
     
-    # Process prediction
     final_features = [np.array(features)]
     prediction = model.predict(final_features)
     output = round(prediction[0], 2)
     
-    # Output formatting as generic currency valuation
     prediction_text = f"${output:,}"
 
     return render_template_string(HTML_TEMPLATE, prediction_text=prediction_text, inputs=form_data)
